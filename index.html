@@ -5,54 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <title>ISS</title>
+    <style>
+        #random {
+            height: 500px;
+        }
+    </style>
+
 </head>
 
 <body>
-    <canvas id="test" height="200" width="500"></canvas>
-    <h1>Are we live</h1>
+    <div id="random"></div>
     <script>
-        const xlabel = [];
-        const ytemps = [];
-        const ctx = document.getElementById('test').getContext('2d');
-        async function chart() {
-            await LoadData()
-            const myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: xlabel,
 
-                    datasets: [{
-                        label: 'Temperature Variation by Year',
-                        data: ytemps,
-                        fill: false,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-            });
-        }
-        async function LoadData() {
-            const csv = await fetch('./ZonAnn.Ts.csv');
-            const res = await csv.text();
-            const rows = res.split('\n').slice(1, res.length);
-            rows.forEach(i => {
-                const res = i.split(',');
-                const year = res[0];
-                const temp = res[1];
-                xlabel.push(year);
-                ytemps.push(parseFloat(temp) + 14);
-            })
-        }
-        chart()
+        const map = L.map('random').setView([28, 84], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
+
+        async function getData() {
+            const res = await fetch('https://randomuser.me/api/?results=1');
+            const data = await res.json();
+            const info = data.results[0].location.coordinates;
+            const { latitude, longitude } = info;
+            /*L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+                .openPopup();*/
+        }
+        getData()
     </script>
+
+
 
 </body>
 
