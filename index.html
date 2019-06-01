@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="test" height="200" width="500"></canvas>
+    <h1>Are we live</h1>
+    <script>
+        const xlabel = [];
+        const ytemps = [];
+        const ctx = document.getElementById('test').getContext('2d');
+        async function chart() {
+            await LoadData()
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: xlabel,
+
+                    datasets: [{
+                        label: 'Temperature Variation by Year',
+                        data: ytemps,
+                        fill: false,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+            });
+        }
+        async function LoadData() {
+            const csv = await fetch('./ZonAnn.Ts.csv');
+            const res = await csv.text();
+            const rows = res.split('\n').slice(1, res.length);
+            rows.forEach(i => {
+                const res = i.split(',');
+                const year = res[0];
+                const temp = res[1];
+                xlabel.push(year);
+                ytemps.push(parseFloat(temp) + 14);
+            })
+        }
+        chart()
+
+    </script>
+
+</body>
+
+</html>
